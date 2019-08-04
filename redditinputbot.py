@@ -1,6 +1,6 @@
 import praw
 from config import responseconfig
-from insertpostgres import insert_name, deleteuser, updateInfo, getInfo, insertPhrasesUsers, userExist, getAllEmails, getAllPhrases
+from insertpostgres import insert_name, deleteuser, updateInfo, getInfo, insertPhrasesUsers, userExist, getAllEmails, getAllPhrases, updatephrase, deletephrase
 
 # create the objects from the imported modules
 
@@ -56,6 +56,48 @@ def getRedditText(message):
             return
         email = body[emailindex+6 : emailendindex]
         updateInfo(name, email, "email")
+    elif (message.subject == "update phrase"):
+        if (userExist(name) == 0):
+            reddit.redditor(name).message('No User', 'Your account has not been found.')
+            return
+        phrase1index = body.find("phrase1(")
+        phrase1endindex = body.find(")phrase1")
+        phrase2index = body.find("phrase2(")
+        phrase2endindex = body.find(")phrase2")
+        phrase3index = body.find("phrase3(")
+        phrase3endindex = body.find(")phrase3")
+        phrases = {}
+        if phrase1index == -1 and phrase1endindex == -1 and phrase2index == -1 and phrase2endindex == -1 and phrase3index == -1 and phrase3endindex == -1:
+            reddit.redditor(name).message('No phrase', 'You have not submitted any phrases to update')
+            return
+        if phrase1index != -1 and phrase1endindex != -1:
+            phrase1 = body[phrase1index+8 : phrase1endindex]
+            phrases[1] = phrase1
+        if phrase2index != -1 and phrase2endindex != -1:
+            phrase2 = body[phrase2index+8 : phrase2endindex]
+            phrases[2] = phrase2
+        if phrase3index != -1 and phrase3endindex != -1:
+            phrase3 = body[phrase3index+8 : phrase3endindex]
+            phrases[3] = phrase3
+        updatephrase(name, phrases)
+    elif (message.subject == "delete phrase"):
+        if (userExist(name) == 0):
+            reddit.redditor(name).message('No User', 'Your account has not been found.')
+            return
+        phrase1index = body.find("phrase1")
+        phrase2index = body.find("phrase2")
+        phrase3index = body.find("phrase3")
+        phrases = []
+        if phrase1index == -1 and phrase2index == -1 and phrase3index == -1:
+            reddit.redditor(name).message('No phrase', 'You have not submitted any phrases to delete')
+            return
+        if phrase1index != -1:
+            phrases.append(1)
+        if phrase2index != -1:
+            phrases.append(2)
+        if phrase3index != -1:
+            phrases.append(3)
+        deletephrase(name, phrases)
     elif (message.subject == "get info"):
         if (userExist(name) == 0):
             reddit.redditor(name).message('No User', 'Your account has not been found.')

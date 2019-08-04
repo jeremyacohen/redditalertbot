@@ -62,6 +62,96 @@ def updateInfo(username, newInfo, command):
     finally:
         if conn is not None:
             conn.close()
+def updatephrase(username, phrases):
+    conn = None
+    try:
+        # read database configuration
+        info = getInfo(username)
+        params = config()
+        # connect to the PostgreSQL database
+        conn = psycopg2.connect(**params)
+        # create a new cursor
+        cur = conn.cursor()
+        if 1 in phrases:
+            updatephrasetouser(info[3],phrases[1], username)
+            postgres_insert_query = """UPDATE usernames set phrase1 = %s where username = %s;"""
+            record_to_insert = (phrases[1], username)
+            cur.execute(postgres_insert_query, record_to_insert)
+        if 2 in phrases:
+            updatephrasetouser(info[4],phrases[2], username)
+            postgres_insert_query = """UPDATE usernames set phrase2 = %s where username = %s;"""
+            record_to_insert = (phrases[2], username)
+            cur.execute(postgres_insert_query, record_to_insert)
+        if 3 in phrases:
+            updatephrasetouser(info[5],phrases[3], username)
+            postgres_insert_query = """UPDATE usernames set phrase3 = %s where username = %s;"""
+            record_to_insert = (phrases[3], username)
+            cur.execute(postgres_insert_query, record_to_insert)
+        conn.commit()
+        # close communication with the database
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+def updatephrasetouser(oldphrase, newphrase, user):
+    conn = None
+    try:
+        # read database configuration
+        params = config()
+        # connect to the PostgreSQL database
+        conn = psycopg2.connect(**params)
+        # create a new cursor
+        cur = conn.cursor()
+        postgres_insert_query = """DELETE from phrasestouser where phrases = %s and username = %s;"""
+        record_to_insert = (oldphrase, user)
+        cur.execute(postgres_insert_query, record_to_insert)
+        postgres_insert_query = """INSERT into phrasestouser (phrases, username) values (%s, %s);"""
+        record_to_insert = (newphrase, user)
+        cur.execute(postgres_insert_query, record_to_insert)
+        conn.commit()
+        # close communication with the database
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+def deletephrase(username, phrases):
+    conn = None
+    try:
+        # read database configuration
+        info = getInfo(username)
+        params = config()
+        # connect to the PostgreSQL database
+        conn = psycopg2.connect(**params)
+        # create a new cursor
+        cur = conn.cursor()
+
+        if 1 in phrases:
+            deletephrasetouser(info[3], username)
+            postgres_insert_query = """UPDATE usernames set phrase1 = null where username = %s;"""
+            record_to_insert = (username,)
+            cur.execute(postgres_insert_query, record_to_insert)
+        if 2 in phrases:
+            deletephrasetouser(info[4], username)
+            postgres_insert_query = """UPDATE usernames set phrase2 = null where username = %s;"""
+            record_to_insert = (username,)
+            cur.execute(postgres_insert_query, record_to_insert)
+        if 3 in phrases:
+            deletephrasetouser(info[5], username)
+            postgres_insert_query = """UPDATE usernames set phrase3 = null where username = %s;"""
+            record_to_insert = (username,)
+            cur.execute(postgres_insert_query, record_to_insert)
+        conn.commit()
+        # close communication with the database
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
 def deleteuser(user):
     conn = None
     try:
@@ -80,6 +170,26 @@ def deleteuser(user):
         # execute the INSERT statement
         cur.execute(postgres_insert_query, record_to_insert)
         # commit the changes to the database
+        conn.commit()
+        # close communication with the database
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+def deletephrasetouser(phrase, user):
+    conn = None
+    try:
+        # read database configuration
+        params = config()
+        # connect to the PostgreSQL database
+        conn = psycopg2.connect(**params)
+        # create a new cursor
+        cur = conn.cursor()
+        postgres_insert_query = """DELETE from phrasestouser where phrases = %s and username = %s;"""
+        record_to_insert = (phrase, user)
+        cur.execute(postgres_insert_query, record_to_insert)
         conn.commit()
         # close communication with the database
         cur.close()
@@ -155,6 +265,7 @@ def insertPhrasesUsers(phrases, username):
     finally:
         if conn is not None:
             conn.close()
+
 def getAllEmails(phrase):
     conn = None
     try:
@@ -200,8 +311,7 @@ if __name__ == '__main__':
     # insert one vendor
     #insert_name("jaboydar'", "3107280895")
     # update_phone("3107280895", "jaboyda")
-    emails = getAllEmails("sure")
-    for item in emails:
-        print (item[0])
+    phrases = {1: "Bob", 2: "Cohen", 3:"Twotime"}
+    updatephrase("jcoguy33", phrases)
     #deleteuser("jaboydar;")
     # insert multiple vendors

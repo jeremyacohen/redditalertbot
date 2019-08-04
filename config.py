@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from configparser import ConfigParser
- 
+from pathlib import Path
 def config(filename='database.ini', section='postgresql'):
     # create a parser
     parser = ConfigParser()
