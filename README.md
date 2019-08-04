@@ -10,8 +10,11 @@ Function: Create new account, it gets your username from your message. Submit up
 Title: new
 Body:
 email()email
+
 phrase1()phrase1
+
 phrase2()phrase2
+
 phrase3()phrase3
 
 Function: delete all records
