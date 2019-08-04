@@ -4,7 +4,7 @@ The bot uses PRAW, a reddit API for python, and it connects to a postgres databa
 
 The avaiable commands:
 
-Put the phrase next to title in the title of your personal message to https://reddit.com/u/emailalertbot
+Put the phrase next to title in the title of your personal message to https://reddit.com/u/emailalertbot when the bot is running.
 
 Put the input information inside the parentheses and do not add any spaces or quotes.
 
